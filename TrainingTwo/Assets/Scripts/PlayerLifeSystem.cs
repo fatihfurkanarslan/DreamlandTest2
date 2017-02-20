@@ -63,6 +63,7 @@ public class PlayerLifeSystem : MonoBehaviour {
 
 	}
 
+    //burda if ile control sağlamak lazım çünkü inzone olmadan da kapattığımda kaydediyor verileri inzone'a girmiş gibi. 
     public void LifeIncrease()
     {
         playerLife++;

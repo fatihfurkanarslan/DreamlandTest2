@@ -5,13 +5,16 @@ using UnityEngine.UI;
 
 public class PlayerHealthManager : MonoBehaviour {
 
-    public int playerHealth;
-    public int fullPlayerHealth;
+    public float playerHealth;
+    public float fullPlayerHealth;
 
     LevelManager levelManager;
     PlayerLifeSystem playerLife;
 
-    Text text;
+    private float healthMines = 0.2f;
+
+    // Text text;
+    Slider slider;
 
     //nedenini anlamadım ama bunu yapmazsam ufak bir bug oluyor oyunda bir sn civarı respawn ederken takılıyor
     public bool isDead;
@@ -19,7 +22,8 @@ public class PlayerHealthManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-        text = GetComponent<Text>();
+        // text = GetComponent<Text>();
+        slider = GetComponent<Slider>();
 
         playerHealth = fullPlayerHealth;
 
@@ -32,6 +36,9 @@ public class PlayerHealthManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+
+        playerHealth -= Time.deltaTime * healthMines;
+
         if(playerHealth <= 0 && !isDead)
         {
             levelManager.RespawnPlayer();
@@ -43,7 +50,13 @@ public class PlayerHealthManager : MonoBehaviour {
             isDead = true;
         }
 
-        text.text = "" + playerHealth;
+        if(playerHealth >= fullPlayerHealth)
+        {
+            playerHealth = fullPlayerHealth;
+        }
+
+        //  text.text = "" + playerHealth;
+        slider.value = playerHealth;
 		
 
 	}

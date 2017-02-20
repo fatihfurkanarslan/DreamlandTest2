@@ -22,6 +22,8 @@ public class LevelLoader : MonoBehaviour {
         if (inZone && Input.GetButtonDown("Vertical"))
         {
             Application.LoadLevel(levelToLoad);
+
+            Debug.Log("fkşsl" + inZone);
             
             
         }

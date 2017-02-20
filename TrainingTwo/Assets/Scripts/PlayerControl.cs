@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerControl : MonoBehaviour {
 
     public float velocity;
+    private float moveSpeed;
     public float jumperVelocity;
 
     private bool attack;
@@ -94,12 +95,16 @@ public class PlayerControl : MonoBehaviour {
         }
 
         float horizontal = Input.GetAxisRaw("Horizontal");
+       
 
         float vertical = Input.GetAxisRaw("Vertical");
 
+
+#if UNITY_STANDALONE
         if(knockbackCount <= 0)
         {
-            GetComponent<Rigidbody2D>().velocity = new Vector2(horizontal * velocity, GetComponent<Rigidbody2D>().velocity.y);
+            Move(horizontal);
+            //GetComponent<Rigidbody2D>().velocity = new Vector2(horizontal * velocity, GetComponent<Rigidbody2D>().velocity.y);
         }
         else if(knockbackCount > 0)
         {
@@ -113,73 +118,9 @@ public class PlayerControl : MonoBehaviour {
                 GetComponent<Rigidbody2D>().velocity = new Vector2(-knockback, knockback/2);
                 knockbackCount -= Time.deltaTime*3;
             }
-        }
+        } 
 
-
-        //touch controls kısmı burda
-        #region touch controls
-        if (Input.touches.Length > 0)
-        {
-            Touch t = Input.GetTouch(0);
-            if (t.phase == TouchPhase.Began)
-            {
-                //save began touch 2d point
-                firstPressPos = new Vector2(t.position.x, t.position.y);
-            }
-            if (t.phase == TouchPhase.Ended)
-            {
-                //save ended touch 2d point
-                secondPressPos = new Vector2(t.position.x, t.position.y);
-
-                //create vector from the two points
-                currentSwipe = new Vector3(secondPressPos.x - firstPressPos.x, secondPressPos.y - firstPressPos.y);
-
-                //normalize the 2d vector
-                currentSwipe.Normalize();
-
-                //swipe upwards
-                if (!(secondPressPos == firstPressPos))
-                {
-                    if (Mathf.Abs(currentSwipe.x) > Mathf.Abs(currentSwipe.y))
-                    {
-                        if (currentSwipe.x < 0)
-                        {
-                            GetComponent<Rigidbody2D>().velocity = new Vector2(velocity * horizontal, GetComponent<Rigidbody2D>().velocity.y);
-                            Debug.Log("sağaaa");
-                        }
-                        else
-                        {
-                            Debug.Log("solaaa");
-                            GetComponent<Rigidbody2D>().velocity = new Vector2(-velocity * horizontal, GetComponent<Rigidbody2D>().velocity.y);
-                            //Swipe Left
-                        }
-                    }
-                    else
-                    {
-                        if (currentSwipe.y < 0)
-                        {
-                            Debug.Log("asağıı");
-                            // Swipe Down
-                        }
-                        else
-                        {
-                            Debug.Log("yukarııı");
-                            //Swipe Up
-                        }
-                    }
-                }
-            }
-
-        }
-        #endregion
-
-        //yüzün yönünü değiştirme
-        Flip(horizontal);
-
-        //horizontal olarak aldığımız değişkeni animationları değiştirirken kullanıyoruz.
-        anim.SetFloat("speed", Mathf.Abs(horizontal));
-
-       
+#endif
         
         //if (Input.GetKey(KeyCode.D))
         //{
@@ -195,12 +136,13 @@ public class PlayerControl : MonoBehaviour {
         //    GetComponent<Rigidbody2D>().velocity = new Vector2(-velocity, GetComponent<Rigidbody2D>().velocity.y);
         //    Flip();
         //}
-
+#if UNITY_STANDALONE
         if (Input.GetButtonDown("Jump") && grounded)
         {
             jump = true;
             HandleJump();
-            GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumperVelocity);
+            //GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumperVelocity);
+            Jump();
         }
 
 
@@ -208,27 +150,138 @@ public class PlayerControl : MonoBehaviour {
         {
             jump = true;
             HandleJump();
-            GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumperVelocity);
+           // GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumperVelocity);
+            Jump();
             doubleJump = true;
         }
+
+
 
         //attack için olan if
         if (Input.GetButtonDown("Fire2"))
         {
-            attack = true;
-            HandleAttack();
-            
-            
+            Sword();
+
+            //attack = true;
+            //HandleAttack();
+
+
             //GetComponent<Rigidbody2D>().velocity = Vector2.zero;// calışmadı tekrar bak...
         }
 
         if (Input.GetButtonDown("Fire1"))
         {
-            Instantiate(throwBall, throwBallPoint.transform.position, throwBallPoint.transform.rotation);
+            //Instantiate(throwBall, throwBallPoint.transform.position, throwBallPoint.transform.rotation);
+            FireBall();
+        }
+
+#endif
+
+        //yüzün yönünü değiştirme
+        Flip(horizontal);
+
+        //horizontal olarak aldığımız değişkeni animationları değiştirirken kullanıyoruz.
+        anim.SetFloat("speed", Mathf.Abs(horizontal));
+
+//touch controls kısmı burda
+#region touch controls
+//        if (Input.touches.Length > 0)
+//        {
+//            Touch t = Input.GetTouch(0);
+//            if (t.phase == TouchPhase.Began)
+//            {
+//                //save began touch 2d point
+//                firstPressPos = new Vector2(t.position.x, t.position.y);
+//            }
+//            if (t.phase == TouchPhase.Ended)
+//            {
+//                //save ended touch 2d point
+//                secondPressPos = new Vector2(t.position.x, t.position.y);
+
+//                //create vector from the two points
+//                currentSwipe = new Vector3(secondPressPos.x - firstPressPos.x, secondPressPos.y - firstPressPos.y);
+
+//                //normalize the 2d vector
+//                currentSwipe.Normalize();
+
+//                //swipe upwards
+//                if (!(secondPressPos == firstPressPos))
+//                {
+//                    if (Mathf.Abs(currentSwipe.x) > Mathf.Abs(currentSwipe.y))
+//                    {
+//                        if (currentSwipe.x < 0)
+//                        {
+//                            GetComponent<Rigidbody2D>().velocity = new Vector2(velocity * horizontal, GetComponent<Rigidbody2D>().velocity.y);
+//                            Debug.Log("sağaaa");
+//                        }
+//                        else
+//                        {
+//                            Debug.Log("solaaa");
+//                            GetComponent<Rigidbody2D>().velocity = new Vector2(-velocity * horizontal, GetComponent<Rigidbody2D>().velocity.y);
+//                            //Swipe Left
+//                        }
+//                    }
+//                    else
+//                    {
+//                        if (currentSwipe.y < 0)
+//                        {
+//                            Debug.Log("asağıı");
+//                            // Swipe Down
+//                        }
+//                        else
+//                        {
+//                            Debug.Log("yukarııı");
+//                            //Swipe Up
+//                        }
+//                    }
+//                }
+//            }
+
+//        }
+#endregion
+
+    }
+
+    public void Jump()
+    {
+       // GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumperVelocity);
+
+        if (grounded)
+        {
+            jump = true;
+            HandleJump();
+            GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumperVelocity);
+           // Jump();
         }
 
 
+        if (!doubleJump && !grounded)
+        { 
+            jump = true;
+            HandleJump();
+             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumperVelocity);
+           // Jump();
+            doubleJump = true;
+        }
     }
+
+    // butona bastığımda move input değişmediği için yada velocity kıpırdamıyor.
+    public void Move(float moveInput)
+    {
+        GetComponent<Rigidbody2D>().velocity = new Vector2(moveInput * velocity, GetComponent<Rigidbody2D>().velocity.y);
+    }
+
+    public void FireBall()
+    {
+        Instantiate(throwBall, throwBallPoint.transform.position, throwBallPoint.transform.rotation);
+    }
+
+    public void Sword()
+    {
+        attack = true;
+        HandleAttack();
+    }
+
 
     void Flip(float horizontal)
     {
