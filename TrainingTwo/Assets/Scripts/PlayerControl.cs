@@ -6,6 +6,7 @@ public class PlayerControl : MonoBehaviour {
 
     public float velocity;
     private float moveSpeed;
+    private float moveVelocity;
     public float jumperVelocity;
 
     private bool attack;
@@ -57,6 +58,10 @@ public class PlayerControl : MonoBehaviour {
     public int takeDamage;
 
     private MovingPlatform platform;
+
+    private LevelLoader levelLoader;
+
+    private TouchControls touchControlsToFlip;
     
 
     void Start () {
@@ -73,6 +78,8 @@ public class PlayerControl : MonoBehaviour {
         anim = GetComponent<Animator>();
 
         platform = FindObjectOfType<MovingPlatform>();
+        levelLoader = FindObjectOfType<LevelLoader>();
+        touchControlsToFlip = FindObjectOfType<TouchControls>();
 
 
     }
@@ -94,17 +101,12 @@ public class PlayerControl : MonoBehaviour {
             doubleJump = false;
         }
 
-        float horizontal = Input.GetAxisRaw("Horizontal");
-       
 
-        float vertical = Input.GetAxisRaw("Vertical");
-
-
-#if UNITY_STANDALONE
+//#if UNITY_STANDALONE
         if(knockbackCount <= 0)
         {
-            Move(horizontal);
-            //GetComponent<Rigidbody2D>().velocity = new Vector2(horizontal * velocity, GetComponent<Rigidbody2D>().velocity.y);
+          //  Move(horizontal);
+            GetComponent<Rigidbody2D>().velocity = new Vector2(moveVelocity, GetComponent<Rigidbody2D>().velocity.y);
         }
         else if(knockbackCount > 0)
         {
@@ -118,10 +120,10 @@ public class PlayerControl : MonoBehaviour {
                 GetComponent<Rigidbody2D>().velocity = new Vector2(-knockback, knockback/2);
                 knockbackCount -= Time.deltaTime*3;
             }
-        } 
+        }
 
-#endif
-        
+        //#endif
+
         //if (Input.GetKey(KeyCode.D))
         //{
         //    facingRightNumber = 5; // artı değer verip flip in içinde scale.x i değiştirmek için kullandık ama gerek kalmadı input.getaxis ile 
@@ -137,6 +139,9 @@ public class PlayerControl : MonoBehaviour {
         //    Flip();
         //}
 #if UNITY_STANDALONE
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
+
         if (Input.GetButtonDown("Jump") && grounded)
         {
             jump = true;
@@ -178,67 +183,72 @@ public class PlayerControl : MonoBehaviour {
 #endif
 
         //yüzün yönünü değiştirme
-        Flip(horizontal);
+         Flip(touchControlsToFlip.moveInput);
 
         //horizontal olarak aldığımız değişkeni animationları değiştirirken kullanıyoruz.
-        anim.SetFloat("speed", Mathf.Abs(horizontal));
+         anim.SetFloat("speed", Mathf.Abs(touchControlsToFlip.moveInput));
 
-//touch controls kısmı burda
-#region touch controls
-//        if (Input.touches.Length > 0)
-//        {
-//            Touch t = Input.GetTouch(0);
-//            if (t.phase == TouchPhase.Began)
-//            {
-//                //save began touch 2d point
-//                firstPressPos = new Vector2(t.position.x, t.position.y);
-//            }
-//            if (t.phase == TouchPhase.Ended)
-//            {
-//                //save ended touch 2d point
-//                secondPressPos = new Vector2(t.position.x, t.position.y);
+        //touch controls kısmı burda
+        #region touch controls
+        if (Input.touches.Length > 0)
+        {
+            Touch t = Input.GetTouch(0);
+            if (t.phase == TouchPhase.Began)
+            {
+                //save began touch 2d point
+                firstPressPos = new Vector2(t.position.x, t.position.y);
+            }
+            if (t.phase == TouchPhase.Ended)
+            {
+                //save ended touch 2d point
+                secondPressPos = new Vector2(t.position.x, t.position.y);
 
-//                //create vector from the two points
-//                currentSwipe = new Vector3(secondPressPos.x - firstPressPos.x, secondPressPos.y - firstPressPos.y);
+                //create vector from the two points
+                currentSwipe = new Vector3(secondPressPos.x - firstPressPos.x, secondPressPos.y - firstPressPos.y);
 
-//                //normalize the 2d vector
-//                currentSwipe.Normalize();
+                //normalize the 2d vector
+                currentSwipe.Normalize();
 
-//                //swipe upwards
-//                if (!(secondPressPos == firstPressPos))
-//                {
-//                    if (Mathf.Abs(currentSwipe.x) > Mathf.Abs(currentSwipe.y))
-//                    {
-//                        if (currentSwipe.x < 0)
-//                        {
-//                            GetComponent<Rigidbody2D>().velocity = new Vector2(velocity * horizontal, GetComponent<Rigidbody2D>().velocity.y);
-//                            Debug.Log("sağaaa");
-//                        }
-//                        else
-//                        {
-//                            Debug.Log("solaaa");
-//                            GetComponent<Rigidbody2D>().velocity = new Vector2(-velocity * horizontal, GetComponent<Rigidbody2D>().velocity.y);
-//                            //Swipe Left
-//                        }
-//                    }
-//                    else
-//                    {
-//                        if (currentSwipe.y < 0)
-//                        {
-//                            Debug.Log("asağıı");
-//                            // Swipe Down
-//                        }
-//                        else
-//                        {
-//                            Debug.Log("yukarııı");
-//                            //Swipe Up
-//                        }
-//                    }
-//                }
-//            }
+                //swipe upwards
+                if (!(secondPressPos == firstPressPos))
+                {
+                    if (Mathf.Abs(currentSwipe.x) > Mathf.Abs(currentSwipe.y))
+                    {
+                        if (currentSwipe.x < 0 && levelLoader.inZone)
+                        {
 
-//        }
-#endregion
+                            
+                            levelLoader.LoadLevel();
+                            //GetComponent<Rigidbody2D>().velocity = new Vector2(velocity * horizontal, GetComponent<Rigidbody2D>().velocity.y);
+                            Debug.Log("sağaaa");
+                        }
+                        else
+                        {
+
+                            Debug.Log("solaaa");
+                            //GetComponent<Rigidbody2D>().velocity = new Vector2(-velocity * horizontal, GetComponent<Rigidbody2D>().velocity.y);
+                            //Swipe Left
+                            levelLoader.LoadLevel();
+                        }
+                    }
+                    else
+                    {
+                        if (currentSwipe.y < 0)
+                        {
+                            Debug.Log("asağıı");
+                            // Swipe Down
+                        }
+                        else
+                        {
+                            Debug.Log("yukarııı");
+                            //Swipe Up
+                        }
+                    }
+                }
+            }
+
+        }
+        #endregion
 
     }
 
@@ -268,7 +278,8 @@ public class PlayerControl : MonoBehaviour {
     // butona bastığımda move input değişmediği için yada velocity kıpırdamıyor.
     public void Move(float moveInput)
     {
-        GetComponent<Rigidbody2D>().velocity = new Vector2(moveInput * velocity, GetComponent<Rigidbody2D>().velocity.y);
+        // GetComponent<Rigidbody2D>().velocity = new Vector2(moveInput * velocity, GetComponent<Rigidbody2D>().velocity.y);
+        moveVelocity = moveInput * velocity;
     }
 
     public void FireBall()
@@ -283,9 +294,9 @@ public class PlayerControl : MonoBehaviour {
     }
 
 
-    void Flip(float horizontal)
+    void Flip(float moveInput)
     {
-        if (facingRight && horizontal < 0)
+        if (facingRight && moveInput < 0)
         {
             facingRight = !facingRight;
 
@@ -296,7 +307,7 @@ public class PlayerControl : MonoBehaviour {
 
             transform.localScale = theScale;
         }
-        if (!facingRight && horizontal > 0)
+        if (!facingRight && moveInput > 0)
         {
             facingRight = !facingRight;
             Vector3 theScale = transform.localScale;

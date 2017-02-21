@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LevelLoader : MonoBehaviour {
 
-    private bool inZone;
+    public bool inZone;
     public string levelToLoad;
     public MainMenu mainMenu;
 
@@ -29,6 +29,11 @@ public class LevelLoader : MonoBehaviour {
         }
 		
 	}
+
+    public void LoadLevel()
+    {
+        Application.LoadLevel(levelToLoad);
+    }
 
     void OnTriggerEnter2D(Collider2D other)
     {
