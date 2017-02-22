@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerControl : MonoBehaviour {
+public class PlayerControl : MonoBehaviour
+{
 
     public float velocity;
     private float moveSpeed;
@@ -19,7 +20,7 @@ public class PlayerControl : MonoBehaviour {
 
     //object in sağa ve sola dönme olayını transform.positionla olmadığı için tuşlara bastığında sayı atamasıyla yaptım.
     private int facingRightNumber;
-    
+
     private bool grounded;
 
     private bool doubleJump;
@@ -53,8 +54,8 @@ public class PlayerControl : MonoBehaviour {
     public float knockbackCount;
     public float knockbackLenght;
 
-   // public float distancebetweenEnemyAndPlayer;
-   // private EnemyHealthOne enemyHealth;
+    // public float distancebetweenEnemyAndPlayer;
+    // private EnemyHealthOne enemyHealth;
     public int takeDamage;
 
     private MovingPlatform platform;
@@ -62,12 +63,13 @@ public class PlayerControl : MonoBehaviour {
     private LevelLoader levelLoader;
 
     private TouchControls touchControlsToFlip;
-    
 
-    void Start () {
 
-       // enemyHealth = FindObjectOfType<EnemyHealthOne>();
-       // knockbackCount = 0f;
+    void Start()
+    {
+
+        // enemyHealth = FindObjectOfType<EnemyHealthOne>();
+        // knockbackCount = 0f;
 
         fingerCount = 0;
 
@@ -84,17 +86,19 @@ public class PlayerControl : MonoBehaviour {
 
     }
 
-    void FixedUpdate() {
+    void FixedUpdate()
+    {
 
         grounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
-        
-       // distancebetweenEnemyAndPlayer = Vector2.Distance(enemyHealth[0].transform.position, transform.position);
-        
-    }
-	
-	void Update () {
 
-        
+        // distancebetweenEnemyAndPlayer = Vector2.Distance(enemyHealth[0].transform.position, transform.position);
+
+    }
+
+    void Update()
+    {
+
+
 
         if (grounded)
         {
@@ -102,23 +106,23 @@ public class PlayerControl : MonoBehaviour {
         }
 
 
-//#if UNITY_STANDALONE
-        if(knockbackCount <= 0)
+        //#if UNITY_STANDALONE
+        if (knockbackCount <= 0)
         {
-          //  Move(horizontal);
+            //  Move(horizontal);
             GetComponent<Rigidbody2D>().velocity = new Vector2(moveVelocity, GetComponent<Rigidbody2D>().velocity.y);
         }
-        else if(knockbackCount > 0)
+        else if (knockbackCount > 0)
         {
             if (knockbackFromRight)
             {
-                GetComponent<Rigidbody2D>().velocity = new Vector2(knockback, knockback/2);
-                knockbackCount -= Time.deltaTime*3;
+                GetComponent<Rigidbody2D>().velocity = new Vector2(knockback, knockback / 2);
+                knockbackCount -= Time.deltaTime * 3;
             }
-            if(!knockbackFromRight)
+            if (!knockbackFromRight)
             {
-                GetComponent<Rigidbody2D>().velocity = new Vector2(-knockback, knockback/2);
-                knockbackCount -= Time.deltaTime*3;
+                GetComponent<Rigidbody2D>().velocity = new Vector2(-knockback, knockback / 2);
+                knockbackCount -= Time.deltaTime * 3;
             }
         }
 
@@ -183,10 +187,10 @@ public class PlayerControl : MonoBehaviour {
 #endif
 
         //yüzün yönünü değiştirme
-         Flip(touchControlsToFlip.moveInput);
+        Flip(touchControlsToFlip.moveInput);
 
         //horizontal olarak aldığımız değişkeni animationları değiştirirken kullanıyoruz.
-         anim.SetFloat("speed", Mathf.Abs(touchControlsToFlip.moveInput));
+        anim.SetFloat("speed", Mathf.Abs(touchControlsToFlip.moveInput));
 
         //touch controls kısmı burda
         #region touch controls
@@ -214,11 +218,9 @@ public class PlayerControl : MonoBehaviour {
                 {
                     if (Mathf.Abs(currentSwipe.x) > Mathf.Abs(currentSwipe.y))
                     {
-                        if (currentSwipe.x < 0 && levelLoader.inZone)
+                        if (currentSwipe.x < 0)
                         {
-
-                            
-                            levelLoader.LoadLevel();
+                            //levelLoader.LoadLevel();
                             //GetComponent<Rigidbody2D>().velocity = new Vector2(velocity * horizontal, GetComponent<Rigidbody2D>().velocity.y);
                             Debug.Log("sağaaa");
                         }
@@ -228,7 +230,7 @@ public class PlayerControl : MonoBehaviour {
                             Debug.Log("solaaa");
                             //GetComponent<Rigidbody2D>().velocity = new Vector2(-velocity * horizontal, GetComponent<Rigidbody2D>().velocity.y);
                             //Swipe Left
-                            levelLoader.LoadLevel();
+                           // levelLoader.LoadLevel();
                         }
                     }
                     else
@@ -254,23 +256,23 @@ public class PlayerControl : MonoBehaviour {
 
     public void Jump()
     {
-       // GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumperVelocity);
+        // GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumperVelocity);
 
         if (grounded)
         {
             jump = true;
             HandleJump();
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumperVelocity);
-           // Jump();
+            // Jump();
         }
 
 
         if (!doubleJump && !grounded)
-        { 
+        {
             jump = true;
             HandleJump();
-             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumperVelocity);
-           // Jump();
+            GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumperVelocity);
+            // Jump();
             doubleJump = true;
         }
     }
@@ -323,7 +325,7 @@ public class PlayerControl : MonoBehaviour {
         if (attack)
         {
             anim.SetTrigger("attack");
-            
+
             attack = false;
         }
     }
@@ -336,7 +338,7 @@ public class PlayerControl : MonoBehaviour {
 
             jump = false;
         }
-        
+
 
     }
 

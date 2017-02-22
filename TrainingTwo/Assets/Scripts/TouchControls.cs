@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TouchControls : MonoBehaviour {
+public class TouchControls : MonoBehaviour
+{
 
     private PlayerControl player;
     public float moveInput;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         player = FindObjectOfType<PlayerControl>();
-	}
+    }
 
-  
-	
+
+
     public void LeftArrow()
     {
         player.Move(-1);
@@ -47,5 +49,4 @@ public class TouchControls : MonoBehaviour {
     {
         player.Jump();
     }
-
 }

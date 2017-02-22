@@ -2,33 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelLoader : MonoBehaviour {
+public class LevelLoader : MonoBehaviour
+{
 
     public bool inZone;
     public string levelToLoad;
     public MainMenu mainMenu;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
 
         inZone = false;
         mainMenu = FindObjectOfType<MainMenu>();
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
 
-        if (inZone && Input.GetButtonDown("Vertical"))
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+        if (inZone)
         {
             Application.LoadLevel(levelToLoad);
 
             Debug.Log("fkşsl" + inZone);
-            
-            
+            inZone = false;
+
+
         }
-		
-	}
+
+    }
 
     public void LoadLevel()
     {
@@ -37,7 +41,7 @@ public class LevelLoader : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.tag == "Player")
+        if (other.tag == "Player")
         {
             mainMenu.Save();
             inZone = true;
